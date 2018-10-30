@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 //TODO: Build this cache and use it.
 public class UserCache {
-
+/*
     // List of users
     private ArrayList<User> users;
 
@@ -41,5 +41,5 @@ public class UserCache {
         // Return the documents
         return this.users;
     }
-
+*/
 }

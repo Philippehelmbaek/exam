@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 //TODO: Build this cache and use it
 public class OrderCache {
-
+/*
     // List of ordes
     private ArrayList<Order> orders;
 
@@ -41,5 +41,5 @@ public class OrderCache {
 
         // Return the documents
         return this.orders;
-    }
+    }*/
 }
