@@ -3,6 +3,10 @@ package controllers;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTCreationException;
 import model.User;
 import utils.Hashing;
 import utils.Log;
@@ -10,9 +14,16 @@ import utils.Log;
 public class UserController {
 
   private static DatabaseController dbCon;
+  //PHIL
+  private static Hashing hashing;
+  private static User user;
+  String token = null;
 
   public UserController() {
     dbCon = new DatabaseController();
+    //PHIL
+    hashing = new Hashing();
+    user = new User();
   }
 
   public static User getUser(int id) {
@@ -38,7 +49,8 @@ public class UserController {
                 rs.getString("first_name"),
                 rs.getString("last_name"),
                 rs.getString("password"),
-                rs.getString("email"));
+                rs.getString("email"),
+                rs.getLong("created_at"));
 
         // return the create object
         return user;
@@ -81,7 +93,8 @@ public class UserController {
                 rs.getString("first_name"),
                 rs.getString("last_name"),
                 rs.getString("password"),
-                rs.getString("email"));
+                rs.getString("email"),
+                rs.getLong("created_at"));
 
         // Add element to list
         users.add(user);
@@ -101,6 +114,9 @@ public class UserController {
 
     // Set creation time for user.
     user.setCreatedTime(System.currentTimeMillis() / 1000L);
+
+    //PHIL
+    hashing.setSalt(String.valueOf(user.getCreatedTime()));
 
     // Check for DB Connection
     if (dbCon == null) {
@@ -135,4 +151,50 @@ public class UserController {
     // Return user
     return user;
   }
+  //PHIL
+  public String login(String email, String password) {
+
+// Build the query for DB
+    String sql = "SELECT * FROM user where email=" + email;
+
+    // Actually do the query
+    ResultSet rs = dbCon.query(sql);
+    User user = null;
+
+    try {
+      // Get first object, since we only have one
+      if (rs.next()) {
+        user = new User(
+                        rs.getInt("id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("password"),
+                        rs.getString("email"),
+                        rs.getLong("created_at"));
+
+        hashing.setSalt(String.valueOf(user.getCreatedTime()));
+        if (user.getPassword().equals(hashing.hashWithSalt(password))){
+          //PHIL - forstår dette kodestykke
+          try {
+            Algorithm algorithm = Algorithm.HMAC256("secret");
+             token = JWT.create()
+                    .withIssuer("auth0")
+                    .sign(algorithm);
+          } catch (JWTCreationException exception){
+            //Invalid Signing configuration / Couldn't convert Claims.
+          }
+
+          return token;
+        }
+
+
+      } else {
+        System.out.println("No user found");
+      }
+    } catch (SQLException ex) {
+      System.out.println(ex.getMessage());
+    } return null;
+  }
+
+
 }

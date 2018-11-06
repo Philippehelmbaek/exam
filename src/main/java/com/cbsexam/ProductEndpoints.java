@@ -19,6 +19,7 @@ public class ProductEndpoints {
 
   private static ProductCache productCache;
 
+  //PHIL
   public ProductEndpoints() {
     this.productCache = new ProductCache();
   }
@@ -48,7 +49,7 @@ public class ProductEndpoints {
   @Path("/")
   public Response getProducts() {
 
-    // Call our controller-layer in order to get the order from the DB
+    // Call our controller-layer in order to get the order from the DB - PHIL
     ArrayList<Product> products = productCache.getProducts(false);
 
     // TODO: Add Encryption to JSON: FIX

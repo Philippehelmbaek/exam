@@ -19,6 +19,7 @@ public class OrderEndpoints {
 
   private static OrderCache orderCache;
 
+  //PHIL
   public OrderEndpoints() {
     this.orderCache = new OrderCache();
   }
@@ -48,7 +49,7 @@ public class OrderEndpoints {
   @Path("/")
   public Response getOrders() {
 
-    // Call our controller-layer in order to get the order from the DB
+    // Call our controller-layer in order to get the order from the DB - PHIL
     ArrayList<Order> orders = orderCache.getOrders(false);
 
     // TODO: Add Encryption to JSON: FIX

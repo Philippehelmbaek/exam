@@ -20,6 +20,7 @@ public class UserEndpoints {
 
   private static UserCache userCache;
 
+  //PHIL
   public UserEndpoints() {
     this.userCache = new UserCache();
   }
@@ -54,7 +55,7 @@ public class UserEndpoints {
     // Write to log that we are here
     Log.writeLog(this.getClass().getName(), this, "Get all users", 0);
 
-    // Get a list of users
+    // Get a list of users - PHIL
     ArrayList<User> users = userCache.getUsers(false);
 
     // TODO: Add Encryption to JSON: FIX
