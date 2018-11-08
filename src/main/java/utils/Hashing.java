@@ -63,7 +63,8 @@ public final class Hashing {
   //PHIL
   public String hashWithSalt( String string ) {
     String salt = string + this.salt;
-    return md5(salt);
+    //PHIL md5 er en gammel metode som er let at hacke/knækkte
+    return sha(salt);
   }
   //PHIL
   public void setSalt( String salt ) {

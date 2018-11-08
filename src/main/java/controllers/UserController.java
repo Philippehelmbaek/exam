@@ -152,14 +152,19 @@ public class UserController {
     return user;
   }
   //PHIL
-  public String login(String email, String password) {
+  public String login(User user) {
 
-// Build the query for DB
-    String sql = "SELECT * FROM user where email=" + email;
+    // Check for connection
+    if (dbCon == null) {
+      dbCon = new DatabaseController();
+    }
+
+// PHIL - Build the query for DB
+    String sql = "SELECT * FROM user where email=" + user.getEmail() + "AND password" + hashing.hashWithSalt(user.getPassword());
 
     // Actually do the query
     ResultSet rs = dbCon.query(sql);
-    User user = null;
+    User loginUser = null;
 
     try {
       // Get first object, since we only have one
@@ -173,8 +178,8 @@ public class UserController {
                         rs.getLong("created_at"));
 
         hashing.setSalt(String.valueOf(user.getCreatedTime()));
-        if (user.getPassword().equals(hashing.hashWithSalt(password))){
-          //PHIL - forstår dette kodestykke
+        if (user.getPassword().equals(hashing.hashWithSalt(user.getPassword()))){
+          //PHIL - forstå dette kodestykke
           try {
             Algorithm algorithm = Algorithm.HMAC256("secret");
              token = JWT.create()

@@ -19,10 +19,12 @@ import utils.Log;
 public class UserEndpoints {
 
   private static UserCache userCache;
+  private UserController userController;
 
   //PHIL
   public UserEndpoints() {
     this.userCache = new UserCache();
+    this.userController = new UserController();
   }
 
   /**
@@ -84,8 +86,11 @@ public class UserEndpoints {
     // Return the data to the user
     if (createUser != null) {
       // Return a response with status 200 and JSON as type
+
       return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
+
     } else {
+
       return Response.status(400).entity("Could not create user").build();
     }
   }
@@ -94,11 +99,32 @@ public class UserEndpoints {
   @POST
   @Path("/login")
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response loginUser(String x) {
+  public Response loginUser(String body) {
 
-    // Return a response with status 200 and JSON as type
-    return Response.status(400).entity("Endpoint not implemented yet").build();
+    User user = new Gson().fromJson(body, User.class);
+
+    String token = userController.login(user);
+
+    try {
+
+      // Return the data to the user
+      if (token != null) {
+        // Return a response with status 200 and JSON as type
+
+        return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(token).build();
+
+      } else {
+
+        return Response.status(400).entity("Could not login").build();
+      }
+
+
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
+    return null;
   }
+
 
   // TODO: Make the system able to delete users
   public Response deleteUser(String x) {
