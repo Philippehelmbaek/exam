@@ -15,14 +15,12 @@ public class UserController {
 
   private static DatabaseController dbCon;
   //PHIL
-  private static Hashing hashing;
   private static User user;
   String token = null;
 
   public UserController() {
     dbCon = new DatabaseController();
     //PHIL
-    hashing = new Hashing();
     user = new User();
   }
 
@@ -116,7 +114,7 @@ public class UserController {
     user.setCreatedTime(System.currentTimeMillis() / 1000L);
 
     //PHIL
-    hashing.setSalt(String.valueOf(user.getCreatedTime()));
+    //hashing.setSalt(String.valueOf(user.getCreatedTime()));
 
     // Check for DB Connection
     if (dbCon == null) {
@@ -124,16 +122,18 @@ public class UserController {
     }
 
     // Insert the user in the DB
-    // TODO: Hash the user password before saving it.
+    // TODO: Hash the user password before saving it.: FIXED
 
-    Hashing hashing = new Hashing();
+    //PHIL
+
     int userID = dbCon.insert(
         "INSERT INTO user(first_name, last_name, password, email, created_at) VALUES('"
             + user.getFirstname()
             + "', '"
             + user.getLastname()
             + "', '"
-            + hashing.hashWithSalt(user.getPassword())
+                //PHIL - user objektet er allerede krypteret, inden man henter kodeordet her
+            + user.getPassword()
             + "', '"
             + user.getEmail()
             + "', "
@@ -160,7 +160,7 @@ public class UserController {
     }
 
 // PHIL - Build the query for DB
-    String sql = "SELECT * FROM user where email=" + user.getEmail() + "AND password" + hashing.hashWithSalt(user.getPassword());
+    String sql = "SELECT * FROM user where email=" + user.getEmail() + "AND password=" + Hashing.sha(user.getPassword());
 
     // Actually do the query
     ResultSet rs = dbCon.query(sql);
@@ -177,8 +177,6 @@ public class UserController {
                         rs.getString("email"),
                         rs.getLong("created_at"));
 
-        hashing.setSalt(String.valueOf(user.getCreatedTime()));
-        if (user.getPassword().equals(hashing.hashWithSalt(user.getPassword()))){
           //PHIL - forstå dette kodestykke
           try {
             Algorithm algorithm = Algorithm.HMAC256("secret");
@@ -193,13 +191,13 @@ public class UserController {
         }
 
 
-      } else {
+     {
         System.out.println("No user found");
       }
     } catch (SQLException ex) {
       System.out.println(ex.getMessage());
+
     } return null;
   }
-
 
 }

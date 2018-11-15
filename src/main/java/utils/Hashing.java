@@ -5,11 +5,13 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import org.bouncycastle.util.encoders.Hex;
 
+import model.User;
+
 public final class Hashing {
 
-  private String salt = "hiko";
+  //private String salt = "hiko";
 
-  // TODO: You should add a salt and make this secure
+  // TODO: You should add a salt and make this secure:
   public static String md5( String rawString ) {
     try {
 
@@ -39,11 +41,15 @@ public final class Hashing {
     return null;
   }
 
-  // TODO: You should add a salt and make this secure
+  // TODO: You should add a salt and make this secure: FIXED
+  //PHIL md5 er en gammel metode som er let at hacke/knække, derfor bruger vi sha
   public static String sha( String rawString ) {
     try {
       // We load the hashing algoritm we wish to use.
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
+
+      //PHIL
+      rawString = rawString + User.getCreatedTime();
 
       // We convert to byte array
       byte[] hash = digest.digest(rawString.getBytes(StandardCharsets.UTF_8));
@@ -61,14 +67,16 @@ public final class Hashing {
     return rawString;
   }
   //PHIL
+
+  /*
   public String hashWithSalt( String string ) {
     String salt = string + this.salt;
-    //PHIL md5 er en gammel metode som er let at hacke/knækkte
+    //PHIL md5 er en gammel metode som er let at hacke/knække
     return sha(salt);
   }
   //PHIL
   public void setSalt( String salt ) {
     this.salt = salt;
-  }
+  } */
 
 }
