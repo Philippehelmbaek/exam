@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import cache.UserCache;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
@@ -33,6 +34,7 @@ public class UserController {
 
     // Build the query for DB
     String sql = "SELECT * FROM user where id=" + id;
+
 
     // Actually do the query
     ResultSet rs = dbCon.query(sql);

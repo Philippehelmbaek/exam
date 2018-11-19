@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 import cache.ProductCache;
+import com.cbsexam.ProductEndpoints;
 import model.Product;
 import utils.Log;
 
@@ -99,11 +100,9 @@ public class ProductController {
       dbCon = new DatabaseController();
     }
 
-    // TODO: Use caching layer.
+    // TODO: Use caching layer. : FIXED i ProductEndpoints klassen
     String sql = "SELECT * FROM product";
-    //PHIL
-    ProductCache productCache = new ProductCache();
-    productCache.getProducts(true);
+
 
     ResultSet rs = dbCon.query(sql);
     ArrayList<Product> products = new ArrayList<Product>();
@@ -113,7 +112,7 @@ public class ProductController {
         Product product =
             new Product(
                 rs.getInt("id"),
-                rs.getString("name"),
+                rs.getString("product_name"),
                 rs.getString("sku"),
                 rs.getFloat("price"),
                 rs.getString("description"),
@@ -164,7 +163,8 @@ public class ProductController {
       // Return null if product has not been inserted into database
       return null;
     }
-
+    //PHIL - sætter forceupdate til true..
+    ProductEndpoints.productCache.getProducts(true);
     // Return product
     return product;
   }

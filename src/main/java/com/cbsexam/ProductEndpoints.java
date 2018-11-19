@@ -17,7 +17,7 @@ import utils.Encryption;
 @Path("product")
 public class ProductEndpoints {
 
-  private static ProductCache productCache;
+  public static ProductCache productCache;
 
   //PHIL
   public ProductEndpoints() {

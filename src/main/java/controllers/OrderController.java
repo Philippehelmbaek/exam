@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
+import cache.ProductCache;
 import model.Address;
 import model.LineItem;
 import model.Order;
@@ -27,6 +29,7 @@ public class OrderController {
 
     // Build SQL string to query
     String sql = "SELECT * FROM orders where id=" + id;
+
 
     // Do the query in the database and create an empty object for the results
     ResultSet rs = dbCon.query(sql);
@@ -77,7 +80,16 @@ public class OrderController {
       dbCon = new DatabaseController();
     }
 
-    String sql = "SELECT * FROM order";
+    //String sql = "SELECT * FROM orders";
+    String sql = "SELECT *,\n" +
+            "billing.street_address as billing,\n" +
+            "shipping.street_address as shipping\n" +
+            "FROM orders\n" +
+            "JOIN USER ON user.id = orders.user_id\n" +
+            "JOIN address AS billing ON orders.billing_address_id=billing.id\n" +
+            "JOIN address as shipping on orders.shipping_address_id=shipping.id";
+
+
 
     ResultSet rs = dbCon.query(sql);
     ArrayList<Order> orders = new ArrayList<Order>();
@@ -86,10 +98,30 @@ public class OrderController {
       while (rs.next()) {
 
         // Perhaps we could optimize things a bit here and get rid of nested queries.
-        User user = UserController.getUser(rs.getInt("user_id"));
+        User user = new User(
+                        rs.getInt("user_id"),
+                        rs.getString("first_name"),
+                        rs.getString("last_name"),
+                        rs.getString("password"),
+                        rs.getString("email"),
+                        rs.getLong("created_at"));
+
         ArrayList<LineItem> lineItems = LineItemController.getLineItemsForOrder(rs.getInt("id"));
-        Address billingAddress = AddressController.getAddress(rs.getInt("billing_address_id"));
-        Address shippingAddress = AddressController.getAddress(rs.getInt("shipping_address_id"));
+
+        Address billingAddress = new Address(
+                        rs.getInt("billing_address_id"),
+                        rs.getString("name"),
+                        rs.getString("billing"),
+                        rs.getString("city"),
+                        rs.getString("zipcode"));
+
+        Address shippingAddress = new Address(
+                rs.getInt("shipping_address_id"),
+                rs.getString("name"),
+                rs.getString("shipping"),
+                rs.getString("city"),
+                rs.getString("zipcode"));
+
 
         // Create an order from the database data
         Order order =
@@ -187,7 +219,7 @@ public class OrderController {
         System.out.println("Transaktionen foretager rollback");
       } catch (SQLException e1) {
 
-        //PHIL-Hvis ordren ikke er lykkedes, "roller" den tilbage
+        //PHIL- Hvis ordren ikke er lykkedes, "roller" den tilbage
         System.out.println("Transaktionen foretager ikke rollback" + e1.getMessage());
       } finally {
         //Phil - setAutoCommit sættes tilbage til true, så hver statement igen committes automatisk, når transaktioner er færdiggjort.
