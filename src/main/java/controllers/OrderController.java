@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import cache.ProductCache;
+import com.cbsexam.OrderEndpoints;
 import model.Address;
 import model.LineItem;
 import model.Order;
@@ -80,14 +80,14 @@ public class OrderController {
       dbCon = new DatabaseController();
     }
 
-    //String sql = "SELECT * FROM orders";
+    //PHIL - SQL database-kald
     String sql = "SELECT *,\n" +
             "billing.street_address as billing,\n" +
             "shipping.street_address as shipping\n" +
             "FROM orders\n" +
             "JOIN USER ON user.id = orders.user_id\n" +
             "JOIN address AS billing ON orders.billing_address_id=billing.id\n" +
-            "JOIN address as shipping on orders.shipping_address_id=shipping.id";
+            "JOIN address AS shipping ON orders.shipping_address_id=shipping.id";
 
 
 
@@ -97,7 +97,8 @@ public class OrderController {
     try {
       while (rs.next()) {
 
-        // Perhaps we could optimize things a bit here and get rid of nested queries.
+        // TODO: Perhaps we could optimize things a bit here and get rid of nested queries. - FIXED
+        //PHIL
         User user = new User(
                         rs.getInt("user_id"),
                         rs.getString("first_name"),
@@ -107,14 +108,14 @@ public class OrderController {
                         rs.getLong("created_at"));
 
         ArrayList<LineItem> lineItems = LineItemController.getLineItemsForOrder(rs.getInt("id"));
-
+        //PHIL
         Address billingAddress = new Address(
                         rs.getInt("billing_address_id"),
                         rs.getString("name"),
                         rs.getString("billing"),
                         rs.getString("city"),
                         rs.getString("zipcode"));
-
+        //PHIL
         Address shippingAddress = new Address(
                 rs.getInt("shipping_address_id"),
                 rs.getString("name"),
@@ -230,7 +231,8 @@ public class OrderController {
         }
       }
     }
-
+//PHIL
+    OrderEndpoints.orderCache.getOrders(true);
     //Return order
     return order;
   }

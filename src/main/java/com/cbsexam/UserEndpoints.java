@@ -18,7 +18,7 @@ import utils.Log;
 @Path("user")
 public class UserEndpoints {
 
-  private static UserCache userCache;
+  public static UserCache userCache;
   private UserController userController;
 
   //PHIL
@@ -122,6 +122,7 @@ public class UserEndpoints {
     } catch (Exception e) {
       System.out.println(e.getMessage());
     }
+    //PHIL - returner null
     return null;
   }
 

@@ -48,8 +48,11 @@ public final class Hashing {
       // We load the hashing algoritm we wish to use.
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
 
+      //PHIL - Saltet er gemt i Config-klassen, og dermed gemt mere sikkert
+      String salt = Config.getHashWithSalt();
+
       //PHIL
-      rawString = rawString + User.getCreatedTime();
+      rawString = rawString + User.getCreatedTime() + salt;
 
       // We convert to byte array
       byte[] hash = digest.digest(rawString.getBytes(StandardCharsets.UTF_8));

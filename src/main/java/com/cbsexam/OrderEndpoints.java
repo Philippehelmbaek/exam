@@ -17,7 +17,7 @@ import utils.Encryption;
 @Path("order")
 public class OrderEndpoints {
 
-  private static OrderCache orderCache;
+  public static OrderCache orderCache;
 
   //PHIL
   public OrderEndpoints() {

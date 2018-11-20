@@ -8,6 +8,7 @@ import cache.UserCache;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
+import com.cbsexam.UserEndpoints;
 import model.User;
 import utils.Hashing;
 import utils.Log;
@@ -146,6 +147,9 @@ public class UserController {
       //Update the userid of the user before returning
       user.setId(userID);
     } else{
+
+      //PHIL
+      UserEndpoints.userCache.getUsers(true);
       // Return null if user has not been inserted into database
       return null;
     }
@@ -199,7 +203,9 @@ public class UserController {
     } catch (SQLException ex) {
       System.out.println(ex.getMessage());
 
-    } return null;
+    }
+
+    return null;
   }
 
 }
