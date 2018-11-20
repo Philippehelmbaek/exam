@@ -27,8 +27,16 @@ public class OrderController {
       dbCon = new DatabaseController();
     }
 
-    // Build SQL string to query
-    String sql = "SELECT * FROM orders where id=" + id;
+    // PHIL - databasekald
+    String sql = "SELECT *,\n" +
+            "billing.street_address as billing,\n" +
+            "shipping.street_address as shipping\n" +
+            "FROM orders\n" +
+            "JOIN USER ON user.id = orders.user_id\n" +
+            "JOIN address AS billing ON orders.billing_address_id=billing.id\n" +
+            "JOIN address AS shipping ON orders.shipping_address_id=shipping.id\n" +
+            "WHERE orders.id=" + id;
+
 
 
     // Do the query in the database and create an empty object for the results
@@ -38,11 +46,33 @@ public class OrderController {
     try {
       if (rs.next()) {
 
-        // Perhaps we could optimize things a bit here and get rid of nested queries.
-        User user = UserController.getUser(rs.getInt("user_id"));
+        // TODO: Perhaps we could optimize things a bit here and get rid of nested queries. : FIXED
+        //PHIL
+        User user = new User(
+                rs.getInt("user_id"),
+                rs.getString("first_name"),
+                rs.getString("last_name"),
+                rs.getString("password"),
+                rs.getString("email"),
+                rs.getLong("created_at"));
+
         ArrayList<LineItem> lineItems = LineItemController.getLineItemsForOrder(rs.getInt("id"));
-        Address billingAddress = AddressController.getAddress(rs.getInt("billing_address_id"));
-        Address shippingAddress = AddressController.getAddress(rs.getInt("shipping_address_id"));
+
+        //PHIL
+        Address billingAddress = new Address(
+                rs.getInt("billing_address_id"),
+                rs.getString("name"),
+                rs.getString("billing"),
+                rs.getString("city"),
+                rs.getString("zipcode"));
+
+        //PHIL
+        Address shippingAddress = new Address(
+                rs.getInt("shipping_address_id"),
+                rs.getString("name"),
+                rs.getString("shipping"),
+                rs.getString("city"),
+                rs.getString("zipcode"));
 
         // Create an object instance of order from the database dataa
         order =
@@ -98,7 +128,7 @@ public class OrderController {
       while (rs.next()) {
 
         // TODO: Perhaps we could optimize things a bit here and get rid of nested queries. - FIXED
-        //PHIL
+        //PHIL - Erstatter nested loops, for nemmere at kunne indentificere mulige fejl, i hver enkelt paramter - i stedet for bare hos billingAddress
         User user = new User(
                         rs.getInt("user_id"),
                         rs.getString("first_name"),

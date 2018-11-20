@@ -4,10 +4,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import cache.UserCache;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.cbsexam.UserEndpoints;
 import model.User;
 import utils.Hashing;
@@ -183,11 +184,12 @@ public class UserController {
                         rs.getString("email"),
                         rs.getLong("created_at"));
 
-          //PHIL - forstå dette kodestykke
+          //PHIL - kilde JWT https://github.com/auth0/java-jwt
           try {
             Algorithm algorithm = Algorithm.HMAC256("secret");
              token = JWT.create()
-                    .withIssuer("auth0")
+                     //PHIL - Tilføjer withClaim så man kan deleteUser
+                    .withIssuer("auth0").withClaim("user_id",loginUser.id)
                     .sign(algorithm);
           } catch (JWTCreationException exception){
             //Invalid Signing configuration / Couldn't convert Claims.
@@ -207,5 +209,34 @@ public class UserController {
 
     return null;
   }
+
+  public boolean delete( String token) {
+    DecodedJWT jwt = null;
+    try {
+      jwt  = JWT.decode(token);
+    } catch (JWTDecodeException exception){
+      //Invalid token
+    }
+
+    Log.writeLog(UserController.class.getName(), null, "Delete user by ID", 0);
+
+    // Check for connection
+    if (dbCon == null) {
+      dbCon = new DatabaseController();
+    }
+    //PHIL - Databasekald
+    String sql = "DELETE * FROM user WHERE id" + jwt.getClaim("user_id").asInt();
+
+    int i = dbCon.insert(sql);
+
+    if (i == 1) {
+      return true;
+    } else
+      return false;
+  }
+
+  //public static boolean update(User user, String token) {
+
+  //}
 
 }

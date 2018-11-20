@@ -39,14 +39,25 @@ public class UserEndpoints {
     // Use the ID to get the user from the controller.
     User user = UserController.getUser(idUser);
 
-    // TODO: Add Encryption to JSON: FIX
+    // TODO: Add Encryption to JSON: FIXED
     // Convert the user object to json in order to return the object
     String json = new Gson().toJson(user);
     json = Encryption.encryptDecryptXOR(json);
 
     // Return the user with the status code 200
-    // TODO: What should happen if something breaks down?
-    return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
+    // TODO: What should happen if something breaks down? : FIXED
+
+    // PHIL - Leder efter hvorvidt der findes en bruger med et tilhørende ID
+    if (idUser != 0) {
+
+      // Return a response with status 200 and JSON as type
+      return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
+
+    } else {
+
+      //PHIL - Rapporter en 404-error, idet der ikke ligger en user med et tilhørende ID
+      return Response.status(404).entity("Could not find user").build();
+    }
   }
 
   /** @return Responses */
@@ -127,11 +138,17 @@ public class UserEndpoints {
   }
 
 
-  // TODO: Make the system able to delete users
-  public Response deleteUser(String x) {
-
-    // Return a response with status 200 and JSON as type
-    return Response.status(400).entity("Endpoint not implemented yet").build();
+  // TODO: Make the system able to delete users : FIXED
+  public Response deleteUser(String token) {
+    try {
+      if (userController.delete(token) != false) {
+        return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("Brugeren med tilhørende token er nu logget ind" + token).build();
+      }
+      return Response.status(400).entity("Kunne ikke logge ind med denne bruger").build();
+    } catch (Exception e1) {
+      System.out.println(e1.getMessage());
+    }
+    return null;
   }
 
   // TODO: Make the system able to update users
