@@ -118,7 +118,7 @@ public class UserController {
     user.setCreatedTime(System.currentTimeMillis() / 1000L);
 
     //PHIL
-    //hashing.setSalt(String.valueOf(user.getCreatedTime()));
+    //Hashing.sha(String.valueOf(user.getCreatedTime()));
 
     // Check for DB Connection
     if (dbCon == null) {

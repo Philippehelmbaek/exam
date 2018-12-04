@@ -81,7 +81,7 @@ public class UserEndpoints {
   }
 
   @POST
-  @Path("/")
+  @Path("/create")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response createUser(String body) {
 
