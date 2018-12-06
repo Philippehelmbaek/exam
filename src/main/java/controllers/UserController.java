@@ -161,13 +161,15 @@ public class UserController {
   //PHIL
   public String login(User user) {
 
+    Log.writeLog(UserController.class.getName(), user, "Login", 0);
+
     // Check for connection
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
 
 // PHIL - Build the query for DB
-    String sql = "SELECT * FROM user where email=" + user.getEmail() + "AND password=" + Hashing.sha(user.getPassword());
+    String sql = "SELECT * FROM user where email='" + user.getEmail() + "'AND password='" + Hashing.sha(user.getPassword()) +"'";
 
     // Actually do the query
     ResultSet rs = dbCon.query(sql);
@@ -176,7 +178,7 @@ public class UserController {
     try {
       // Get first object, since we only have one
       if (rs.next()) {
-        user = new User(
+        loginUser = new User(
                         rs.getInt("id"),
                         rs.getString("first_name"),
                         rs.getString("last_name"),
@@ -189,14 +191,15 @@ public class UserController {
             Algorithm algorithm = Algorithm.HMAC256("secret");
              token = JWT.create()
                      //PHIL - Tilføjer withClaim så man kan deleteUser
-                    .withIssuer("auth0").withClaim("user_id",loginUser.id)
+                    .withIssuer("auth0").withClaim("userId",loginUser.id)
                     .sign(algorithm);
+
+             return token;
           } catch (JWTCreationException exception){
             //Invalid Signing configuration / Couldn't convert Claims.
           }
 
-          return token;
-        }
+        } else
 
 
      {
@@ -204,6 +207,7 @@ public class UserController {
       }
     } catch (SQLException ex) {
       System.out.println(ex.getMessage());
+      return ex.getMessage();
 
     }
 
@@ -225,7 +229,7 @@ public class UserController {
       dbCon = new DatabaseController();
     }
     //PHIL - Databasekald
-    String sql = "DELETE * FROM user WHERE id" + jwt.getClaim("user_id").asInt();
+    String sql = "DELETE * FROM user WHERE id" + jwt.getClaim("userId").asInt();
 
     int i = dbCon.insert(sql);
 

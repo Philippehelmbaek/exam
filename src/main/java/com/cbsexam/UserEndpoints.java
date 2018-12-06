@@ -9,6 +9,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import model.User;
@@ -131,7 +132,7 @@ public class UserEndpoints {
 
 
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      e.printStackTrace();
     }
     //PHIL - returner null
     return null;
@@ -139,6 +140,9 @@ public class UserEndpoints {
 
 
   // TODO: Make the system able to delete users : FIXED
+  @POST
+  @Path("/delete")
+  @Consumes(MediaType.APPLICATION_JSON)
   public Response deleteUser(String token) {
     try {
       if (userController.delete(token) != false) {
