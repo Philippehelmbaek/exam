@@ -11,6 +11,7 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.cbsexam.UserEndpoints;
 import model.User;
+import org.apache.solr.common.util.Hash;
 import utils.Hashing;
 import utils.Log;
 
@@ -18,13 +19,14 @@ public class UserController {
 
   private static DatabaseController dbCon;
   //PHIL
-  private static User user;
-  String token = null;
+ // private static User user;
+  private String token;
 
   public UserController() {
     dbCon = new DatabaseController();
     //PHIL
-    user = new User();
+    this.token = token;
+   // user = new User();
   }
 
   public static User getUser(int id) {
@@ -137,7 +139,7 @@ public class UserController {
             + user.getLastname()
             + "', '"
                 //PHIL - user objektet er allerede krypteret, inden man henter kodeordet her
-            + user.getPassword()
+            + Hashing.sha(user.getPassword())
             + "', '"
             + user.getEmail()
             + "', "
@@ -163,17 +165,19 @@ public class UserController {
 
     Log.writeLog(UserController.class.getName(), user, "Login", 0);
 
+
     // Check for connection
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
 
 // PHIL - Build the query for DB
-    String sql = "SELECT * FROM user where email='" + user.getEmail() + "'AND password='" + Hashing.sha(user.getPassword()) +"'";
+    String sql = "SELECT * FROM user where email='" + user.getEmail() + "'AND password='" + Hashing.sha(user.getPassword()) +"'";t
+
 
     // Actually do the query
     ResultSet rs = dbCon.query(sql);
-    User loginUser = null;
+    User loginUser;
 
     try {
       // Get first object, since we only have one
@@ -188,6 +192,7 @@ public class UserController {
 
           //PHIL - kilde JWT https://github.com/auth0/java-jwt
           try {
+
             Algorithm algorithm = Algorithm.HMAC256("secret");
              token = JWT.create()
                      //PHIL - Tilføjer withClaim så man kan deleteUser
@@ -195,14 +200,12 @@ public class UserController {
                     .sign(algorithm);
 
              return token;
+
           } catch (JWTCreationException exception){
             //Invalid Signing configuration / Couldn't convert Claims.
           }
 
-        } else
-
-
-     {
+        } else {
         System.out.println("No user found");
       }
     } catch (SQLException ex) {

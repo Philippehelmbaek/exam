@@ -9,7 +9,6 @@ import model.User;
 
 public final class Hashing {
 
-  //private String salt = "hiko";
 
   // TODO: You should add a salt and make this secure:
   public static String md5( String rawString ) {

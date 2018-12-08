@@ -11,6 +11,7 @@ public class User {
   private String password;
   private static long createdTime;
 
+
   public User(int id, String firstname, String lastname, String password, String email, Long createdTime) {
     this.id = id;
     this.firstname = firstname;
@@ -23,6 +24,7 @@ public class User {
    //default constructor - ikke sikker om det skal bruges
   public User () {
   }
+
 
   public int getId() {
     return id;
