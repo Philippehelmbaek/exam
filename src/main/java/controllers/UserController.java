@@ -101,7 +101,7 @@ public class UserController {
                 rs.getLong("created_at"));
 
         // Add element to list
-        users.add(user);
+t        users.add(user);
       }
     } catch (SQLException ex) {
       System.out.println(ex.getMessage());
@@ -172,7 +172,7 @@ public class UserController {
     }
 
 // PHIL - Build the query for DB
-    String sql = "SELECT * FROM user where email='" + user.getEmail() + "'AND password='" + Hashing.sha(user.getPassword()) +"'";t
+    String sql = "SELECT * FROM user where email='" + user.getEmail() + "'AND password='" + Hashing.sha(user.getPassword()) +"'";
 
 
     // Actually do the query
@@ -232,7 +232,7 @@ public class UserController {
       dbCon = new DatabaseController();
     }
     //PHIL - Databasekald
-    String sql = "DELETE * FROM user WHERE id" + jwt.getClaim("userId").asInt();
+    String sql = "DELETE FROM user WHERE id=" + jwt.getClaim("userId").asInt();
 
     int i = dbCon.insert(sql);
 
@@ -242,8 +242,6 @@ public class UserController {
       return false;
   }
 
-  //public static boolean update(User user, String token) {
 
-  //}
 
 }

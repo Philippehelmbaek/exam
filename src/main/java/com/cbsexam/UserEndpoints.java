@@ -144,21 +144,19 @@ public class UserEndpoints {
   @Path("/delete")
   @Consumes(MediaType.APPLICATION_JSON)
   public Response deleteUser(String token) {
+
     try {
-      if (userController.delete(token) != false) {
-        return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("Brugeren med tilhørende token er nu logget ind" + token).build();
+      if (userController.delete(token)) {
+        return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("Brugeren med tilhørende token er nu slettet" + token).build();
+      } else {
+        return Response.status(400).entity("Kunne ikke slette denne bruger").build();
       }
-      return Response.status(400).entity("Kunne ikke logge ind med denne bruger").build();
+
     } catch (Exception e1) {
-      System.out.println(e1.getMessage());
-    }
+      e1.printStackTrace();
+    } 
     return null;
   }
 
-  // TODO: Make the system able to update users
-  public Response updateUser(String x) {
 
-    // Return a response with status 200 and JSON as type
-    return Response.status(400).entity("Endpoint not implemented yet").build();
-  }
 }
