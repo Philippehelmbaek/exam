@@ -112,14 +112,12 @@ public class OrderController {
 
     //PHIL - SQL database-kald
     String sql = "SELECT *,\n" +
-            "billing.street_address as billing,\n" +
-            "shipping.street_address as shipping\n" +
-            "FROM orders\n" +
-            "JOIN USER ON user.id = orders.user_id\n" +
-            "JOIN address AS billing ON orders.billing_address_id=billing.id\n" +
-            "JOIN address AS shipping ON orders.shipping_address_id=shipping.id";
-
-
+            "            billing.street_address as billing,\n" +
+            "            shipping.street_address as shipping\n" +
+            "            FROM orders\n" +
+            "            JOIN USER ON user.id = orders.user_id\n" +
+            "            JOIN address AS billing ON orders.billing_address_id = billing.id\n" +
+            "            JOIN address AS shipping ON orders.shipping_address_id = shipping.id";
 
     ResultSet rs = dbCon.query(sql);
     ArrayList<Order> orders = new ArrayList<Order>();
@@ -261,8 +259,7 @@ public class OrderController {
         }
       }
     }
-//PHIL
-    OrderEndpoints.orderCache.getOrders(true);
+
     //Return order
     return order;
   }

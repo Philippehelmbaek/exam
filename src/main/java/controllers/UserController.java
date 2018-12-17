@@ -101,7 +101,7 @@ public class UserController {
                 rs.getLong("created_at"));
 
         // Add element to list
-t        users.add(user);
+        users.add(user);
       }
     } catch (SQLException ex) {
       System.out.println(ex.getMessage());
