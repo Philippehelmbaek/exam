@@ -29,13 +29,14 @@ public class OrderController {
 
     // PHIL - databasekald
     String sql = "SELECT *,\n" +
-            "billing.street_address as billing,\n" +
-            "shipping.street_address as shipping\n" +
-            "FROM orders\n" +
-            "JOIN USER ON user.id = orders.user_id\n" +
-            "JOIN address AS billing ON orders.billing_address_id=billing.id\n" +
-            "JOIN address AS shipping ON orders.shipping_address_id=shipping.id\n" +
-            "WHERE orders.id=" + id;
+            "            billing.street_address as billing,\n" +
+            "            shipping.street_address as shipping\n" +
+            "            FROM orders\n" +
+            "            JOIN USER ON orders.user_id = user.id\n" +
+            "            JOIN address AS billing ON orders.billing_address_id = billing.id\n" +
+            "            JOIN address AS shipping ON orders.shipping_address_id = shipping.id WHERE orders.id =" + id;
+
+    System.out.println(sql);
 
 
 
@@ -47,6 +48,8 @@ public class OrderController {
       if (rs.next()) {
 
         // TODO: Perhaps we could optimize things a bit here and get rid of nested queries. : FIXED
+        ArrayList<LineItem> lineItems = LineItemController.getLineItemsForOrder(rs.getInt("id"));
+
         //PHIL
         User user = new User(
                 rs.getInt("user_id"),
@@ -55,8 +58,6 @@ public class OrderController {
                 rs.getString("password"),
                 rs.getString("email"),
                 rs.getLong("created_at"));
-
-        ArrayList<LineItem> lineItems = LineItemController.getLineItemsForOrder(rs.getInt("id"));
 
         //PHIL
         Address billingAddress = new Address(
