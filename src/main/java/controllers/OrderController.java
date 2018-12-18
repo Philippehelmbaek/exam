@@ -32,7 +32,7 @@ public class OrderController {
             "            billing.street_address as billing,\n" +
             "            shipping.street_address as shipping\n" +
             "            FROM orders\n" +
-            "            JOIN USER ON orders.user_id = user.id\n" +
+            "            JOIN user ON orders.user_id = user.id\n" +
             "            JOIN address AS billing ON orders.billing_address_id = billing.id\n" +
             "            JOIN address AS shipping ON orders.shipping_address_id = shipping.id WHERE orders.id =" + id;
 
@@ -116,7 +116,7 @@ public class OrderController {
             "            billing.street_address as billing,\n" +
             "            shipping.street_address as shipping\n" +
             "            FROM orders\n" +
-            "            JOIN USER ON user.id = orders.user_id\n" +
+            "            JOIN user ON user.id = orders.user_id\n" +
             "            JOIN address AS billing ON orders.billing_address_id = billing.id\n" +
             "            JOIN address AS shipping ON orders.shipping_address_id = shipping.id";
 
