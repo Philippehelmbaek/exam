@@ -47,10 +47,10 @@ public final class Hashing {
       // We load the hashing algoritm we wish to use.
       MessageDigest digest = MessageDigest.getInstance("SHA-256");
 
-      //PHIL - Saltet er gemt i Config-klassen, og dermed gemt mere sikkert
+      // Saltet er gemt i Config-klassen, og dermed gemt mere sikkert
       String salt = Config.getHashWithSalt();
 
-      //PHIL
+      // Kodeordet tillægges et salt
       rawString = rawString + User.getCreatedTime() + salt;
 
       // We convert to byte array

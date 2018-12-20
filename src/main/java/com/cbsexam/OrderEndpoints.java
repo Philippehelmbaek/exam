@@ -19,7 +19,7 @@ public class OrderEndpoints {
 
   public static OrderCache orderCache;
 
-  //PHIL
+  // Oprettes en constructor, og der laves et objekt af orderCache
   public OrderEndpoints() {
     this.orderCache = new OrderCache();
   }
@@ -38,6 +38,8 @@ public class OrderEndpoints {
     // TODO: Add Encryption to JSON: FIX
     // We convert the java object to json with GSON library imported in Maven
     String json = new Gson().toJson(order);
+
+    // Json formatet krypteres ved brug af XOR
     json = Encryption.encryptDecryptXOR(json);
 
     // Return a response with status 200 and JSON as type
@@ -49,12 +51,15 @@ public class OrderEndpoints {
   @Path("/")
   public Response getOrders() {
 
-    // Call our controller-layer in order to get the order from the DB - PHIL
+    // Call our controller-layer in order to get the order from the DB
+    // Forceupdate sættes til false i Cachen
     ArrayList<Order> orders = orderCache.getOrders(false);
 
     // TODO: Add Encryption to JSON: FIX
     // We convert the java object to json with GSON library imported in Maven
     String json = new Gson().toJson(orders);
+
+    // Json formatet krypteres ved brug af XOR
     json = Encryption.encryptDecryptXOR(json);
 
     // Return a response with status 200 and JSON as type
@@ -77,13 +82,14 @@ public class OrderEndpoints {
 
     // Return the data to the user
     if (createdOrder != null) {
+      //Phil
       OrderEndpoints.orderCache.getOrders(true);
       // Return a response with status 200 and JSON as type
       return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(json).build();
     } else {
 
       // Return a response with status 400 and a message in text
-      return Response.status(400).entity("Could not create user").build();
+      return Response.status(400).entity("Could not create order").build();
     }
   }
 }

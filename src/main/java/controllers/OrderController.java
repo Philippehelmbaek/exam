@@ -27,7 +27,7 @@ public class OrderController {
       dbCon = new DatabaseController();
     }
 
-    // PHIL - databasekald
+    // Databasekald til at undgå nested queries
     String sql = "SELECT *,\n" +
             "            billing.street_address as billing,\n" +
             "            shipping.street_address as shipping\n" +
@@ -36,7 +36,6 @@ public class OrderController {
             "            JOIN address AS billing ON orders.billing_address_id = billing.id\n" +
             "            JOIN address AS shipping ON orders.shipping_address_id = shipping.id WHERE orders.id =" + id;
 
-    System.out.println(sql);
 
 
 
@@ -50,7 +49,7 @@ public class OrderController {
         // TODO: Perhaps we could optimize things a bit here and get rid of nested queries. : FIXED
         ArrayList<LineItem> lineItems = LineItemController.getLineItemsForOrder(rs.getInt("id"));
 
-        //PHIL
+        // Create an object instance of user from the database data
         User user = new User(
                 rs.getInt("user_id"),
                 rs.getString("first_name"),
@@ -59,7 +58,7 @@ public class OrderController {
                 rs.getString("email"),
                 rs.getLong("created_at"));
 
-        //PHIL
+        // Create an object instance of address from the database data
         Address billingAddress = new Address(
                 rs.getInt("billing_address_id"),
                 rs.getString("name"),
@@ -67,7 +66,7 @@ public class OrderController {
                 rs.getString("city"),
                 rs.getString("zipcode"));
 
-        //PHIL
+        // Create an object instance of address from the database data
         Address shippingAddress = new Address(
                 rs.getInt("shipping_address_id"),
                 rs.getString("name"),
@@ -75,7 +74,7 @@ public class OrderController {
                 rs.getString("city"),
                 rs.getString("zipcode"));
 
-        // Create an object instance of order from the database dataa
+        // Create an object instance of order from the database data
         order =
                 new Order(
                         rs.getInt("id"),
@@ -111,7 +110,7 @@ public class OrderController {
       dbCon = new DatabaseController();
     }
 
-    //PHIL - SQL database-kald
+    //Database kald for at undgå nested queries
     String sql = "SELECT *,\n" +
             "            billing.street_address as billing,\n" +
             "            shipping.street_address as shipping\n" +
@@ -127,7 +126,7 @@ public class OrderController {
       while (rs.next()) {
 
         // TODO: Perhaps we could optimize things a bit here and get rid of nested queries. - FIXED
-        //PHIL - Erstatter nested loops, for nemmere at kunne indentificere mulige fejl, i hver enkelt paramter - i stedet for bare hos billingAddress
+        // Create an object instance of user from the database data
         User user = new User(
                         rs.getInt("user_id"),
                         rs.getString("first_name"),
@@ -137,14 +136,16 @@ public class OrderController {
                         rs.getLong("created_at"));
 
         ArrayList<LineItem> lineItems = LineItemController.getLineItemsForOrder(rs.getInt("id"));
-        //PHIL
+
+        // Create an object instance of address from the database data
         Address billingAddress = new Address(
                         rs.getInt("billing_address_id"),
                         rs.getString("name"),
                         rs.getString("billing"),
                         rs.getString("city"),
                         rs.getString("zipcode"));
-        //PHIL
+
+        // Create an object instance of address from the database data
         Address shippingAddress = new Address(
                 rs.getInt("shipping_address_id"),
                 rs.getString("name"),
@@ -204,7 +205,7 @@ public class OrderController {
     Connection connection = null;
 
     try {
-      //PHIL - Her slår vi auto-commit mode fra, så der kan udføres transaktioner
+      //Auto-commit mode slås fra, så der kan udføres transaktioner
       connection.setAutoCommit(false);
 
       // Insert the product in the DB
@@ -239,7 +240,7 @@ public class OrderController {
 
       order.setLineItems(items);
 
-      //PHIL- Committer hvis orden er lykkedes
+      //Der committes hvis orden er lykkedes
       connection.commit();
 
     } catch (SQLException e) {
@@ -249,10 +250,10 @@ public class OrderController {
         System.out.println("Transaktionen foretager rollback");
       } catch (SQLException e1) {
 
-        //PHIL- Hvis ordren ikke er lykkedes, "roller" den tilbage
+        //Hvis ordren ikke er lykkedes, "roller" den tilbage
         System.out.println("Transaktionen foretager ikke rollback" + e1.getMessage());
       } finally {
-        //Phil - setAutoCommit sættes tilbage til true, så hver statement igen committes automatisk, når transaktioner er færdiggjort.
+        //AutoCommit sættes tilbage til true, så hver statement igen committes automatisk, når transaktioner er færdiggjort.
         try {
           connection.setAutoCommit(true);
         } catch (SQLException e2) {

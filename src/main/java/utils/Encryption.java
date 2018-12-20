@@ -7,17 +7,19 @@ public final class Encryption {
     // If encryption is enabled in Config.
     if (Config.getEncryption()) {
 
-      // The key is predefined and hidden in code
       // TODO: Create a more complex code and store it somewhere better: FIXED
-      //PHIL - Her hentes vores nøgle fra Config klassen..
-      String encryptionKey = Config.getEncryptionKey();
-      //PHIL - Her laves vores key fra en String om til CharArray, for at det kan bruge det i følgende for-loop
+
+      // Her hentes vores nøgle fra Config klassen..
+      String encryptionKey = Config.getEncryptionKey()
+              ;
+      // Her laves vores key fra en String om til CharArray, for at det kan bruge det i følgende for-loop
       char[] key = encryptionKey.toCharArray();
 
       // Stringbuilder enables you to play around with strings and make useful stuff
       StringBuilder thisIsEncrypted = new StringBuilder();
 
       // TODO: This is where the magic of XOR is happening. Are you able to explain what is going on?: FIXED
+
       for (int i = 0; i < rawString.length(); i++) {
         thisIsEncrypted.append((char) (rawString.charAt(i) ^ key[i % key.length]));
       }

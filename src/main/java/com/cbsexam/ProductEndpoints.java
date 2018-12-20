@@ -19,7 +19,7 @@ public class ProductEndpoints {
 
   public static ProductCache productCache;
 
-  //PHIL
+  // Oprettes en constructor, og der laves et objekt af productCache
   public ProductEndpoints() {
     this.productCache = new ProductCache();
   }
@@ -38,6 +38,8 @@ public class ProductEndpoints {
     // TODO: Add Encryption to JSON: FIX
     // We convert the java object to json with GSON library imported in Maven
     String json = new Gson().toJson(product);
+
+    // Json formatet krypteres ved brug af XOR
     json = Encryption.encryptDecryptXOR(json);
 
     // Return a response with status 200 and JSON as type
@@ -49,12 +51,15 @@ public class ProductEndpoints {
   @Path("/")
   public Response getProducts() {
 
-    // Call our controller-layer in order to get the order from the DB - PHIL
+    // Call our controller-layer in order to get the order from the DB
+    //Forceupdate sættes til false i Cachen
     ArrayList<Product> products = productCache.getProducts(false);
 
     // TODO: Add Encryption to JSON: FIX
     // We convert the java object to json with GSON library imported in Maven
     String json = new Gson().toJson(products);
+
+    // Json formatet krypteres ved brug af XOR
     json = Encryption.encryptDecryptXOR(json);
 
     // Return a response with status 200 and JSON as type

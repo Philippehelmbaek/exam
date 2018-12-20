@@ -18,15 +18,12 @@ import utils.Log;
 public class UserController {
 
   private static DatabaseController dbCon;
-  //PHIL
- // private static User user;
+  //Definerer token som en String
   private String token;
 
   public UserController() {
     dbCon = new DatabaseController();
-    //PHIL
     this.token = token;
-   // user = new User();
   }
 
   public static User getUser(int id) {
@@ -119,26 +116,22 @@ public class UserController {
     // Set creation time for user.
     user.setCreatedTime(System.currentTimeMillis() / 1000L);
 
-    //PHIL
-    //Hashing.sha(String.valueOf(user.getCreatedTime()));
-
     // Check for DB Connection
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
 
-    // Insert the user in the DB
+
     // TODO: Hash the user password before saving it.: FIXED
 
-    //PHIL
-
+    // Insert the user in the DB
     int userID = dbCon.insert(
         "INSERT INTO user(first_name, last_name, password, email, created_at) VALUES('"
             + user.getFirstname()
             + "', '"
             + user.getLastname()
             + "', '"
-                //PHIL - user objektet er allerede krypteret, inden man henter kodeordet her
+                // Hasher kodeordet inden den gemmes i databasen
             + Hashing.sha(user.getPassword())
             + "', '"
             + user.getEmail()
@@ -151,8 +144,9 @@ public class UserController {
       user.setId(userID);
     } else{
 
-      //PHIL
+      // Forceupdate sættes til true
       UserEndpoints.userCache.getUsers(true);
+
       // Return null if user has not been inserted into database
       return null;
     }
@@ -160,9 +154,10 @@ public class UserController {
     // Return user
     return user;
   }
-  //PHIL
+
   public String login(User user) {
 
+    // Write in log that we've reach this step
     Log.writeLog(UserController.class.getName(), user, "Login", 0);
 
 
@@ -171,7 +166,7 @@ public class UserController {
       dbCon = new DatabaseController();
     }
 
-// PHIL - Build the query for DB
+    // Databasekald for login, hvor passwordet til login skal passe med det hashede password i databasen
     String sql = "SELECT * FROM user where email='" + user.getEmail() + "'AND password='" + Hashing.sha(user.getPassword()) +"'";
 
 
@@ -190,15 +185,16 @@ public class UserController {
                         rs.getString("email"),
                         rs.getLong("created_at"));
 
-          //PHIL - kilde JWT https://github.com/auth0/java-jwt
+          // Try catch hvor der JWT algoritmen benyttes
           try {
 
             Algorithm algorithm = Algorithm.HMAC256("secret");
              token = JWT.create()
-                     //PHIL - Tilføjer withClaim så man kan deleteUser
+                     // Tilføjer withClaim så man kan slette en bruger
                     .withIssuer("auth0").withClaim("userId",loginUser.id)
                     .sign(algorithm);
 
+             // Token returneres
              return token;
 
           } catch (JWTCreationException exception){
@@ -225,13 +221,14 @@ public class UserController {
       //Invalid token
     }
 
+    // Write in log that we've reach this step
     Log.writeLog(UserController.class.getName(), null, "Delete user by ID", 0);
 
     // Check for connection
     if (dbCon == null) {
       dbCon = new DatabaseController();
     }
-    //PHIL - Databasekald
+    // Databasekald som sletter det userID, som passer med den token der er tildelt som claim i JWT
     String sql = "DELETE FROM user WHERE id=" + jwt.getClaim("userId").asInt();
 
     int i = dbCon.insert(sql);
@@ -241,7 +238,6 @@ public class UserController {
     } else
       return false;
   }
-
 
 
 }

@@ -22,7 +22,7 @@ public class UserEndpoints {
   public static UserCache userCache;
   private UserController userController;
 
-  //PHIL
+  // Oprettes en constructor, og der laves et objekt af userCache og userController
   public UserEndpoints() {
     this.userCache = new UserCache();
     this.userController = new UserController();
@@ -43,12 +43,14 @@ public class UserEndpoints {
     // TODO: Add Encryption to JSON: FIXED
     // Convert the user object to json in order to return the object
     String json = new Gson().toJson(user);
+
+    // Json formatet krypteres ved brug af XOR
     json = Encryption.encryptDecryptXOR(json);
 
     // Return the user with the status code 200
     // TODO: What should happen if something breaks down? : FIXED
 
-    // PHIL - Leder efter hvorvidt der findes en bruger med et tilhørende ID
+    // Leder efter hvorvidt der findes en bruger med et tilhørende ID
     if (idUser != 0) {
 
       // Return a response with status 200 and JSON as type
@@ -56,7 +58,7 @@ public class UserEndpoints {
 
     } else {
 
-      //PHIL - Rapporter en 404-error, idet der ikke ligger en user med et tilhørende ID
+      // Rapporter en 404-error, idet der ikke ligger en user med et tilhørende ID
       return Response.status(404).entity("Could not find user").build();
     }
   }
@@ -69,12 +71,15 @@ public class UserEndpoints {
     // Write to log that we are here
     Log.writeLog(this.getClass().getName(), this, "Get all users", 0);
 
-    // Get a list of users - PHIL
+    // Get a list of users
+    // Forceupdate sættes til false i Cachen
     ArrayList<User> users = userCache.getUsers(false);
 
     // TODO: Add Encryption to JSON: FIXED
     // Transfer users to json in order to return it to the user
     String json = new Gson().toJson(users);
+
+    // Json formatet krypteres ved brug af XOR
     json = Encryption.encryptDecryptXOR(json);
 
     // Return the users with the status code 200
@@ -113,28 +118,28 @@ public class UserEndpoints {
   @Consumes(MediaType.APPLICATION_JSON)
   public Response loginUser(String body) {
 
+    // Indlæser Json formatet fra body, og videresender det til user klassen
     User user = new Gson().fromJson(body, User.class);
 
+    // PHIL
     String token = userController.login(user);
 
+    // Try-catch der indeholer response statuser, for hvorvidt brugeren kan logge ind eller ej
     try {
 
-      // Return the data to the user
       if (token != null) {
         // Return a response with status 200 and JSON as type
-
         return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity(token).build();
 
       } else {
-
+        // Returnerer et svar med status 400 hvis man ikke kan logge ind.
         return Response.status(400).entity("Could not login").build();
       }
-
 
     } catch (Exception e) {
       e.printStackTrace();
     }
-    //PHIL - returner null
+    // Returner null
     return null;
   }
 
@@ -145,10 +150,14 @@ public class UserEndpoints {
   @Consumes(MediaType.APPLICATION_JSON)
   public Response deleteUser(String token) {
 
+    // Try-catch statement for hvorvidt det lykkedes at slette brugeren eller ej
     try {
       if (userController.delete(token)) {
+        // Return a response with status 200 and JSON as type
         return Response.status(200).type(MediaType.APPLICATION_JSON_TYPE).entity("Brugeren med tilhørende token er nu slettet" + token).build();
+
       } else {
+        // Returnerer et svar med status 400 hvis brugeren ikke kan slettes
         return Response.status(400).entity("Kunne ikke slette denne bruger").build();
       }
 
